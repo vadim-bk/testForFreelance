@@ -1,11 +1,10 @@
 import { usersData } from '../mocks';
-import { fakeApi } from '../helpers';
-import { getRandomInt } from '../helpers/index';
+import { fakeApi, fakeApiCreate, fakeApiEdit, fakeApiRemove, fakeApiGetUser } from '../helpers';
 
-export const getUsers = async () => await fakeApi(usersData);
-export const editUser = async (user) => await fakeApi(user);
-export const deleteUser = async (user) => await fakeApi(user);
-export const createUser = async (user) => {
-  const id = `${getRandomInt(100)} ${new Date()}`;
-  return await fakeApi({ ...user, id });
+export default {
+  getUsers: async () => await fakeApi(usersData),
+  getUser: async (id) => await fakeApiGetUser(id),
+  editUser: async (user) => await fakeApiEdit(user),
+  deleteUser: async (id) => await fakeApiRemove(id),
+  createUser: async (user) => await fakeApiCreate(user),
 };

@@ -1,113 +1,123 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-// import { createUser } from "../redux/usersReducer";
-import styled from "styled-components";
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
-export const CreateUser = ({ createUser }) => {
-  const [fields, setFields] = useState({
-    name: "",
-    surname: "",
-    desc: "",
-    validated: false,
-    created: false,
-  });
+import routes from '../../config/routes';
+import { getRandomInt } from '../../helpers';
+import { ItemImg } from '../Home/Home.styled';
+import { Spinner } from '../../common/Spinner';
+import { editUser, getUser } from '../Home/Home.actions';
+import { GET_USER_FAILURE } from '../../config/types';
+import { createUser } from './CreateUser.actions';
+import { CreateBtn, Form, FormGroup, Input, InputText, Label } from './CreateUser.styled';
 
-  const handleOnChange = ({ target }) => {
-    const id = target.id;
+export const CreateUser = ({ match }) => {
+  const id = match.params.id;
+  const { currentUser } = useSelector((state) => state.home);
 
-    if (id === "formGroupName") {
-      setFields({ ...fields, name: target.value });
-    } else if (id === "formGroupSurname") {
-      setFields({ ...fields, surname: target.value });
-    } else {
-      setFields({ ...fields, desc: target.value });
-    }
+  const initialState = {
+    id: `${getRandomInt(100)} ${new Date()}`,
+    first_name: '',
+    last_name: '',
+    email: '',
+    avatar: null,
   };
 
-  const handleSubmit = (e) => {
+  const [fields, setFields] = useState(initialState);
+
+  const history = useHistory();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (id) {
+      dispatch(getUser(id));
+    }
+    return () => {
+      setFields(initialState);
+      dispatch({ type: GET_USER_FAILURE });
+    };
+  }, [id]);
+
+  useEffect(() => {
+    if (currentUser?.id) {
+      setFields({
+        ...fields,
+        id: currentUser?.id,
+        first_name: currentUser?.first_name,
+        last_name: currentUser?.last_name,
+        email: currentUser?.email,
+        avatar: currentUser?.avatar,
+      });
+    }
+  }, [currentUser]);
+
+  const handleChangeInput = (e, input) => setFields({ ...fields, [input]: e.target.value });
+
+  const handleUploadAvatar = (e) => {
     e.preventDefault();
-
-    if (fields.name.length && fields.surname.length && fields.desc.length) {
-      createUser(fields);
-      setFields({ ...fields, created: true });
-    } else {
-      setFields({ ...fields, validated: true });
+    let reader = new FileReader();
+    let file = e.target.files[0];
+    reader.onloadend = () => setFields({ ...fields, avatar: reader.result });
+    if (file) {
+      reader.readAsDataURL(file);
     }
   };
 
-  // if (fields.created) {
-  //   return (
-  //     <Alert variant="success">
-  //       Success, created new user! Go to <Link to="/">Home</Link>
-  //     </Alert>
-  //   );
-  // }
+  const handleSubmit = () => {
+    if (
+      fields.first_name.length &&
+      fields.first_name.length &&
+      fields.email.length &&
+      fields.avatar
+    ) {
+      if (id) {
+        dispatch(editUser(fields));
+      } else {
+        dispatch(createUser(fields));
+      }
+      setFields(initialState);
+      history.push(routes.home);
+    }
+  };
 
+  return id && fields.id !== id ? (
+    <Spinner />
+  ) : (
+    <Form>
+      <FormGroup>
+        <Label>First name</Label>
+        <InputText
+          placeholder="Enter first name"
+          value={fields.first_name}
+          onChange={(e) => handleChangeInput(e, 'first_name')}
+        ></InputText>
+      </FormGroup>
 
-  return (
-    <div>
-    {/* First name <input name="first_name" />
-    Last name
-    <input name="last_name" />
-    Email
-    <input name="email" />
-    Avatar URL
-    <input name="avatar" />
-    <button>Create new user</button>
-    {users.map((user) => (
-      <div key={user.id}>
-        <img src={user.avatar} alt={`${user.first_name} ${user.last_name}`} />
-        {user.first_name} {user.last_name} / {user.email}
-        <button>Edit</button>
-        <button>Delete</button>
-      </div>
-    ))} */}
-  </div>
+      <FormGroup>
+        <Label>Last name</Label>
+        <InputText
+          placeholder="Enter last name"
+          value={fields.last_name}
+          onChange={(e) => handleChangeInput(e, 'last_name')}
+        ></InputText>
+      </FormGroup>
 
-    // <Form
-    //   className="form"
-    //   noValidate
-    //   validated={fields.validated}
-    //   onSubmit={handleSubmit}
-    // >
-    //   <Form.Group controlId="formGroupName">
-    //     <Form.Label>Name</Form.Label>
-    //     <Form.Control
-    //       type="text"
-    //       value={fields.name}
-    //       onChange={handleOnChange}
-    //       placeholder="Enter your name"
-    //       required
-    //     />
-    //   </Form.Group>
+      <FormGroup>
+        <Label>Email</Label>
+        <InputText
+          placeholder="Enter email"
+          value={fields.email}
+          onChange={(e) => handleChangeInput(e, 'email')}
+        ></InputText>
+      </FormGroup>
 
-    //   <Form.Group controlId="formGroupSurname">
-    //     <Form.Label>Surname</Form.Label>
-    //     <Form.Control
-    //       type="text"
-    //       value={fields.surname}
-    //       onChange={handleOnChange}
-    //       placeholder="Enter your name"
-    //       required
-    //     />
-    //   </Form.Group>
+      <FormGroup>
+        <Label>Photo</Label>
+        <Input type="file" onChange={handleUploadAvatar}></Input>
+        {fields.avatar && <ItemImg src={fields.avatar} />}
+      </FormGroup>
 
-    //   <Form.Group controlId="formGroupDescription">
-    //     <Form.Label>Description</Form.Label>
-    //     <Form.Control
-    //       as="textarea"
-    //       type="text"
-    //       value={fields.desc}
-    //       onChange={handleOnChange}
-    //       className="form-textarea"
-    //       placeholder="Enter description"
-    //       required
-    //     />
-    //   </Form.Group>
-
-    //   <Button type="submit" variant="primary">
-    //     Create
-    //   </Button>
-    // </Form>
+      <CreateBtn onClick={handleSubmit}>{id ? 'Update' : 'Create'}</CreateBtn>
+    </Form>
   );
 };
