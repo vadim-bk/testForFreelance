@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import routes from '../../config/routes';
+import { Spinner } from '../../common/Spinner';
 import { getUsers, removeUser } from './Home.actions';
 import { BtnAction, Container, Item, ItemImg, List, WrapperBtn } from './Home.styled';
-import { Spinner } from '../../common/Spinner';
 
 export const Home = () => {
   const dispatch = useDispatch();
@@ -18,8 +18,6 @@ export const Home = () => {
       dispatch(getUsers());
     }
   }, []);
-
-  console.log(users)
 
   const handleClickRemove = (id) => dispatch(removeUser(id));
 

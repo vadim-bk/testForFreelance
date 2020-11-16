@@ -33,7 +33,6 @@ export const editUser = (fields) => async (dispatch) => {
 export const removeUser = (id) => async (dispatch) => {
   try {
     const data = await api.deleteUser(id);
-    // console.log(data)
     dispatch({ type: types.DELETE_USER_SUCCESS, data });
   } catch (error) {
     dispatch({ type: types.DELETE_USER_FAILURE });

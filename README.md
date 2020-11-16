@@ -4,9 +4,9 @@ You have a list of users received by fake API and stored in App.js state.
 
 ### Your task is to add functionality for:
 
-- Add a new user to the list
-- Edit a user from the list
-- Delete a user from the list
+- Add a new user to the list // Done
+- Edit a user from the list // Done
+- Delete a user from the list // Done
 
 ### Other requirements:
 
@@ -18,13 +18,13 @@ You have a list of users received by fake API and stored in App.js state.
 
 ### Bonus tasks:
 
-- Add unit tests
-- Add some new functionality at your discretion
+- Add unit tests // Implemented unit tests for Ajax (fake)
+- Add some new functionality at your discretion 
 
 ### Please answer these questions at the end of your test work:
 
-- How much time does this work take for you?
-- What would you like to improve if you have additional time?
+- How much time does this work take for you? // 4h 
+- What would you like to improve if you have additional time? // I would add: notifications (success/error), modal window (are you sure?) for delete action, pagination for home page, custom hooks and best styles
 
 ## Available Scripts
 
